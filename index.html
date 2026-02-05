@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>leooncode Roblox Mod menu — Reward</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <main class="app">
+    <header class="app-header">
+      <div class="logo">
+        <div class="neon">leooncode</div>
+        <div class="sub">Roblox Mod menu</div>
+      </div>
+      <div class="meta">v0.0.2</div>
+    </header>
+
+    <section class="card">
+      <div class="card-left">
+        <div class="file-icon">⤓</div>
+        <div class="file-info">
+          <div class="file-name">leooncode_reward.txt</div>
+          <div class="file-meta">Size: ~1 KB • Status: <span id="status">idle</span></div>
+        </div>
+      </div>
+
+      <div class="card-right">
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="controls">
+          <button id="downloadBtn" class="btn neon-btn" disabled>Get Reward</button>
+          <button id="resetBtn" class="btn ghost">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tasks">
+      <h3>Tasks to unlock reward</h3>
+      <div class="task">
+        <div class="task-header">
+          <strong>1) Check out the website</strong>
+          <button id="visitSiteBtn" class="btn small">Visit site</button>
+        </div>
+        <div class="task-line">Open this link and stay away from this page for at least <strong>15 seconds</strong>:
+          <a href="https://sites.google.com/students.mcpasd.k12.wi.us/kromeryunbl0ked/kromery-navagation?authuser=0" target="_blank" rel="noopener noreferrer">Kromery Navagation</a>
+        </div>
+        <div class="task-status">Away time: <span id="awayTime">0</span>s — <span id="siteTaskState">not started</span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-header">
+          <strong>2) YouTube channel</strong>
+          <button id="openYTBtn" class="btn small">Open channel</button>
+        </div>
+        <div class="task-line">Channel: <a href="https://www.youtube.com/@Frostsonscripts" target="_blank" rel="noopener noreferrer">Frostsonscripts</a></div>
+        <div class="task-action">
+          <label><input id="subConfirm" type="checkbox" /> I subscribed (manual confirmation)</label>
+        </div>
+        <div class="task-status">Subscription confirmed: <span id="subState">no</span></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Complete both tasks to download your reward file.
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
