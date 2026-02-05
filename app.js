@@ -1,4 +1,4 @@
-// Reward flow + particle background
+// Reward flow + particle background (auto-confirm subscription on open)
 (() => {
   // Elements
   const visitSiteBtn = document.getElementById('visitSiteBtn');
@@ -23,23 +23,35 @@
   let siteTaskComplete = false;
   let subscribeConfirmed = false;
 
-  // Open site in new tab and start checking visibility
+  // Open site in new tab and try to focus it
   visitSiteBtn.addEventListener('click', () => {
-    window.open(SITE_URL, '_blank', 'noopener,noreferrer');
+    const newWin = window.open(SITE_URL, '_blank', 'noopener,noreferrer');
+    try { if (newWin) newWin.focus(); } catch(e) {}
     // If the page is already hidden, start measuring immediately
     if (document.hidden) {
       if (!hiddenStart) hiddenStart = Date.now();
     }
     siteTaskStateEl.textContent = 'waiting...';
     updateUI();
+    // Tip for user if the new tab opened in background:
+    if (!document.hidden) {
+      alert('If the site opened in a background tab, switch to it and stay there 15 seconds so the task can complete.');
+    }
   });
 
-  // Open YT channel
+  // Open YT channel and auto-confirm subscription (cannot verify real subscription)
   openYTBtn.addEventListener('click', () => {
-    window.open(YT_URL, '_blank', 'noopener,noreferrer');
+    const newWin = window.open(YT_URL, '_blank', 'noopener,noreferrer');
+    try { if (newWin) newWin.focus(); } catch(e) {}
+    // Auto-mark subscription as confirmed because browsers can't verify YouTube subscription
+    subscribeConfirmed = true;
+    subConfirm.checked = true;
+    subStateEl.textContent = 'yes';
+    checkAllTasks();
+    alert('Subscription marked as confirmed locally. (This does not verify the real YouTube subscription.)');
   });
 
-  // Manual subscription checkbox
+  // Manual subscription checkbox (still available)
   subConfirm.addEventListener('change', () => {
     subscribeConfirmed = subConfirm.checked;
     subStateEl.textContent = subscribeConfirmed ? 'yes' : 'no';
@@ -49,10 +61,8 @@
   // Page visibility changes: accumulate hidden time
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      // user left page (switched tab, opened new tab, etc.)
       if (!hiddenStart) hiddenStart = Date.now();
     } else {
-      // user returned
       if (hiddenStart) {
         awayAccum += Date.now() - hiddenStart;
         hiddenStart = null;
@@ -61,7 +71,7 @@
     evaluateAway();
   });
 
-  // Also track window blur/focus as an alternative
+  // Also track blur/focus
   window.addEventListener('blur', () => {
     if (!hiddenStart) hiddenStart = Date.now();
   });
@@ -75,7 +85,6 @@
 
   // Periodic UI update (timer)
   const tickInterval = setInterval(() => {
-    // If currently hidden, show interim time
     let currentAccum = awayAccum;
     if (hiddenStart) currentAccum += (Date.now() - hiddenStart);
     awayTimeEl.textContent = Math.floor(currentAccum / 1000);
@@ -124,7 +133,7 @@
       return;
     }
 
-    // Provide a short progress animation then download the TXT file
+    // Short progress animation then download the TXT file
     statusEl.textContent = 'preparing';
     progressEl.style.width = '0%';
     let p = 0;
@@ -152,6 +161,7 @@
     subConfirm.checked = false;
     awayTimeEl.textContent = '0';
     siteTaskStateEl.textContent = 'not started';
+    siteTaskStateEl.style.color = '';
     subStateEl.textContent = 'no';
     progressEl.style.width = '0%';
     downloadBtn.textContent = 'Get Reward';
@@ -169,14 +179,13 @@
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
-    // add to the document to make click work in some browsers
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
   }
 
-  // --- Particle background (canvas) adapted from previous version ---
+  // --- Particle background (canvas) ---
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: false });
   let width = 0;
@@ -216,7 +225,6 @@
       p.x += p.vx;
       p.y += p.vy;
 
-      // wrap
       if(p.x < -20) p.x = innerWidth + 20;
       if(p.x > innerWidth + 20) p.x = -20;
       if(p.y < -20) p.y = innerHeight + 20;
